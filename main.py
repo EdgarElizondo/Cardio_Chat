@@ -1,6 +1,9 @@
 from Constants import *
 from Questions import *
 
+from backend.logger import log
+from backend.database import database
+
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, Update
 from telegram.ext import (
     Updater,
@@ -26,6 +29,8 @@ ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqu
 # ***********************************************************************************************************************************
 # ************************************************************ QUESTIONS ************************************************************
 # ***********************************************************************************************************************************
+
+# QUESTION 1
 def start(update: Update, context: CallbackContext, ) -> int:
     reply_keyboard = [['Si', 'No']]
     user = update.message.chat
@@ -37,14 +42,17 @@ def start(update: Update, context: CallbackContext, ) -> int:
         reply_markup=ReplyKeyboardMarkup(
             reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
         ),
-        )
+    )
 
     return START
 
-
+# QUESTION 2
 def gender(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Femenino', 'Masculino']]
     user = update.message.chat
+    reply_keyboard = [['Femenino', 'Masculino']]
+    # User register
+    dictUsers[user.id]["userid"] = user.id
+    logger.info(f"Acepto la conversacion {user.first_name}: {update.message.text}")
     
     if update.message.text == "Si":
         update.message.reply_text(
@@ -52,7 +60,7 @@ def gender(update: Update, context: CallbackContext, ) -> int:
             reply_markup=ReplyKeyboardMarkup(
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Femenino o Masculino?'
             ),
-            )
+        )
     elif update.message.text == "No":
         update.message.reply_text(
             "Gracias " + str(user.first_name) + " " + str(user.last_name) + \
@@ -63,9 +71,12 @@ def gender(update: Update, context: CallbackContext, ) -> int:
     return GENDER
 
 
+# QUESTION 3
 def pregnant(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    logger.info(f"Genero de {user.first_name}: {update.message.text}")
+
     if update.message.text == 'Femenino':
         dictUsers[user.id]["Gender"] = 1
         update.message.reply_text(
@@ -73,7 +84,7 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
             reply_markup=ReplyKeyboardMarkup(
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
-            )
+        )
     elif update.message.text == 'Masculino':
         dictUsers[user.id]["Gender"] = 0
         dictUsers[user.id]["Pregnant"] = 0
@@ -82,14 +93,17 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
         update.message.reply_text(
             " " + str(user.first_name) + " " + str(user.last_name) + \
             " toca aqui por favor para avanzar ==> /skip.",
-            )
+        )
 
     return PREGNANT
 
 
+# QUESTION 4
 def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    logger.info(f"Esta embarazado {user.first_name}: {update.message.text}")
+
     if update.message.text == 'Si':
         dictUsers[user.id]["Pregnant"] = 1
         update.message.reply_text(
@@ -97,21 +111,28 @@ def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
             reply_markup=ReplyKeyboardMarkup(
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
-            )
+        )
     elif update.message.text == 'No':
         dictUsers[user.id]["Pregnant"] = 0
         update.message.reply_text(
             " " + str(user.first_name) + " " + str(user.last_name) + \
             " toca aqui por favor para avanzar ==> /skip.",
-            )
+        )
 
     return PREGNANCYWEEKS
 
 
+# QUESTION 5
 def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if dictUsers[user.id]["Pregnant"] == 1:
+        # Pregnancy weeks register
         dictUsers[user.id]["Pregnancy_Weeks"] = update.message.text
+        logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
+    else:
+        # Pregnancy weeks register
+        logger.info(f"Semanas de embarazo tiene {user.first_name}: 0")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ".¿Cuantos años tienes?"
     )
@@ -119,9 +140,13 @@ def age(update: Update, context: CallbackContext, ) -> int:
     return AGE
 
 
+# QUESTION 6
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Age register
     dictUsers[user.id]["Age"] = update.message.text
+    logger.info(f"Edad de {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas?"
     )
@@ -129,9 +154,13 @@ def weight(update: Update, context: CallbackContext, ) -> int:
     return WEIGHT
 
 
+# QUESTION 7
 def height(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Weight register
     dictUsers[user.id]["Weight"] = float(update.message.text)
+    logger.info(f"Pes de {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides?"
     )
@@ -143,11 +172,17 @@ def bmi(weight,height):
     return round(weight/(height**2),2)
 
 
+# QUESTION 8
 def race(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['White', 'Black', "Latin", "Asian", "Navive American", "Other"]]
     user = update.message.chat
+    reply_keyboard = [['White', 'Black', "Latin", "Asian", "Navive American", "Other"]]
+    # Height register
     dictUsers[user.id]["Height"] = float(update.message.text)
+    logger.info(f"Estatura de {user.first_name}: {update.message.text}")
+    # BMI register
     dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
+    logger.info(f"Indice de masa corporal de {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + "¿A qué etnía perteneces?",
         reply_markup=ReplyKeyboardMarkup(
@@ -158,10 +193,14 @@ def race(update: Update, context: CallbackContext, ) -> int:
     return RACE
 
 
+# QUESTION 9
 def smoke(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Race register
     dictUsers[user.id]["Race"] = update.message.text
+    logger.info(f"Etnía de {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Eres fumador?" + \
         "\n\n*NOTA: Se considera fumador si has fumado mas de 100 cigarrillos en tu vida",
@@ -173,11 +212,14 @@ def smoke(update: Update, context: CallbackContext, ) -> int:
     return SMOKE
 
 
+# QUESTION 10
 def drink(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Smoke register
     dictUsers[user.id]["Smoke"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Es fumador {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Eres tomador habitual?" + \
         "\n\n*NOTA: Se considera tomador habitual si tomas:" + \
@@ -191,11 +233,14 @@ def drink(update: Update, context: CallbackContext, ) -> int:
     return DRINK
 
 
+# QUESTION 11
 def exercise(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Drink register
     dictUsers[user.id]["Drink"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Es bebedor habitual {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Has ejercitado durante el último mes?",
         reply_markup=ReplyKeyboardMarkup(
@@ -206,10 +251,13 @@ def exercise(update: Update, context: CallbackContext, ) -> int:
     return EXERCISE
 
 
+# QUESTION 12
 def sleep_time(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Exercise register
     dictUsers[user.id]["Exercise"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Se ejercita {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas horas duermes en promedio?"
     )
@@ -217,19 +265,27 @@ def sleep_time(update: Update, context: CallbackContext, ) -> int:
     return SLEEPTIME
 
 
+# QUESTION 13
 def physical_healt(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Sleep time register
     dictUsers[user.id]["Sleep_Time"] = update.message.text
+    logger.info(f"Cuantas horas duerme {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has tenido alguna enfermedad o lesión. ¿Cuantos tiempo duró?"
+        str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has tenido alguna enfermedad o lesión. ¿Cuantos días duró?"
     )
 
     return PHYSICALHEALTH
 
 
+# QUESTION 14
 def mental_healt(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Physical health register
     dictUsers[user.id]["Physical_Health"] = update.message.text
+    logger.info(f"Cuantos días ha tenido problemas de salud física {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has sentido problemas con tu salud mental. ¿Cuantos días?"
     )
@@ -237,10 +293,14 @@ def mental_healt(update: Update, context: CallbackContext, ) -> int:
     return MENTALHEALTH
 
 
+# QUESTION 15
 def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Mental health register
     dictUsers[user.id]["Mental_Health"] = update.message.text
+    logger.info(f"Cuantos días ha tenido problemas de salud mental {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes problemas graves para caminar o subir escaleras?",
         reply_markup=ReplyKeyboardMarkup(
@@ -251,11 +311,14 @@ def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
     return DIFWALKING
 
 
+# QUESTION 16
 def general_health(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Excelente', 'Muy buena', 'Buena', 'Regular', 'Mala']]
     user = update.message.chat
+    reply_keyboard = [['Excelente', 'Muy buena', 'Buena', 'Regular', 'Mala']]
+    # Difficult walking register
     dictUsers[user.id]["Difficult_Walking"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Tiene problemas para caminar {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", En términos generales, ¿Cómo considerarías tu salud?",
         reply_markup=ReplyKeyboardMarkup(
@@ -266,10 +329,13 @@ def general_health(update: Update, context: CallbackContext, ) -> int:
     return GENHEALTH
 
 
+# QUESTION 17
 def stroke(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # General health register
     dictUsers[user.id]["General_Health"] = update.message.text
+    logger.info(f"Salud general de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Alguna vez has tenido un infarto?",
@@ -281,10 +347,13 @@ def stroke(update: Update, context: CallbackContext, ) -> int:
     return STROKE
 
 
+# QUESTION 18
 def asthma(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Stroke register
     dictUsers[user.id]["Stroke"] = boolean_answer[update.message.text]
+    logger.info(f"Ha tenido un infarto {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de asma?",
@@ -296,11 +365,14 @@ def asthma(update: Update, context: CallbackContext, ) -> int:
     return ASTHMA
 
 
+# QUESTION 19
 def diabetis(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Asthma register
     dictUsers[user.id]["Asthma"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Tiene asma {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces diabetis?",
         reply_markup=ReplyKeyboardMarkup(
@@ -311,11 +383,14 @@ def diabetis(update: Update, context: CallbackContext, ) -> int:
     return DIABETIS
 
 
+# QUESTION 20
 def kidney_disease(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Diabetis register
     dictUsers[user.id]["Diabetis"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Tiene diabetis {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de alguna enfermedad en los riñones?",
         reply_markup=ReplyKeyboardMarkup(
@@ -326,11 +401,14 @@ def kidney_disease(update: Update, context: CallbackContext, ) -> int:
     return KIDNEYDISEASE
 
 
+# QUESTION 21
 def skin_cancer(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
     user = update.message.chat
+    reply_keyboard = [['Si', 'No']]
+    # Kidney disease register
     dictUsers[user.id]["Kidney_Disease"] = boolean_answer[update.message.text]
-    
+    logger.info(f"Tiene problemas con el riñon {user.first_name}: {update.message.text}")
+
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes o has tenido cáncer de piel?",
         reply_markup=ReplyKeyboardMarkup(
@@ -343,9 +421,21 @@ def skin_cancer(update: Update, context: CallbackContext, ) -> int:
 
 def end_query(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    # Skin cancer register
     dictUsers[user.id]["Skin_Cancer"] = boolean_answer[update.message.text]
+    logger.info(f"Tiene cancer de piel {user.first_name}: {update.message.text}")
     
-    print(dictUsers[user.id])
+    # Database connection
+    db.add_user_to_db(dictUsers[user.id])
+    
+    # Final Message
+    update.message.reply_text(
+        "Ha terminado la encuesta, sus datos han sido guradados con exito." + \
+        "\nLa función de predicción esta en proceso, favor de intentarlo en otro momento"
+        )
+
+
+
     return ConversationHandler.END
 
 def cancel(update: Update, context: CallbackContext, ) -> int:
@@ -402,4 +492,6 @@ def main():
     updater.idle()
 
 if __name__ == "__main__":
+    logger = log(__name__)
+    db = database('CorBot')
     main()
