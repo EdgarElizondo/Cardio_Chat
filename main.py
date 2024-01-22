@@ -23,7 +23,7 @@ ethnic_answer = {"White": 0, "Black": 1, "Latin": 2, "Asian": 3, "Native America
 health_answer = {"Excelente": 0, "Muy buena": 1, "Buena": 2, "Regular": 3, "Mala": 4}
 
 # Default messages
-bot_name = "[Asignar nombre]"
+bot_name = "CorBot"
 ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqui ==> /cancel"
 
 # ***********************************************************************************************************************************
@@ -148,7 +148,7 @@ def weight(update: Update, context: CallbackContext, ) -> int:
     logger.info(f"Edad de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas?"
+        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas (Kilogramos)?"
     )
 
     return WEIGHT
@@ -162,7 +162,7 @@ def height(update: Update, context: CallbackContext, ) -> int:
     logger.info(f"Pes de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides?"
+        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides (metros)?"
     )
 
     return HEIGHT
@@ -493,5 +493,5 @@ def main():
 
 if __name__ == "__main__":
     logger = log(__name__)
-    db = database('CorBot')
+    db = database(bot_name)
     main()
