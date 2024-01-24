@@ -5,7 +5,7 @@ test_dict = {
     'Gender': 0, 
     'Pregnant': 0, 
     'Pregnancy_Weeks': 0, 
-    'Age': 31, 
+    'Age': "30-34", 
     'Weight': 77.0, 
     'Height': 1.75, 
     'BMI': 25.14, 
@@ -28,6 +28,6 @@ test_dict = {
 # Execute Test
 model = ann_model()
 model.load(test_dict)
-#perdiction = model.evaluate()
+perdiction = model.evaluate()
 
-#print(perdiction)
+print("La predicción es de:",perdiction)
