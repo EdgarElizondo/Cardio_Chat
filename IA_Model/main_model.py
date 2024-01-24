@@ -1,8 +1,8 @@
 import torch
 import numpy as np
 import pandas as pd
-from model_constants import *
-from ann_model.model import TabularModel
+from .model_constants import *
+from .ann_model.model import TabularModel
 
 
 class ann_model():

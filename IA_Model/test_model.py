@@ -28,6 +28,6 @@ test_dict = {
 # Execute Test
 model = ann_model()
 model.load(test_dict)
-perdiction = model.evaluate()
+prediction = model.evaluate()
 
-print("La predicción es de:",perdiction)
+print("La predicción es de:",prediction)

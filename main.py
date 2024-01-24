@@ -1,6 +1,8 @@
 from Constants import *
 from Questions import *
 
+from IA_Model.run_model import run_ann
+
 from backend.logger import log
 from backend.database import database
 
@@ -145,6 +147,35 @@ def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     # Age register
     dictUsers[user.id]["Age"] = int(update.message.text)
+    # Se categoriza la edad para coincidir con el dataset de la red neuronal
+    if dictUsers[user.id]["Age"] >= 80:
+        dictUsers[user.id]["Age"] = "80+"
+    elif dictUsers[user.id]["Age"] >= 75:
+        dictUsers[user.id]["Age"] = "75-79"
+    elif dictUsers[user.id]["Age"] >= 70:
+        dictUsers[user.id]["Age"] = "70-74"
+    elif dictUsers[user.id]["Age"] >= 65:
+        dictUsers[user.id]["Age"] = "65-69"
+    elif dictUsers[user.id]["Age"] >= 60:
+        dictUsers[user.id]["Age"] = "60-64"
+    elif dictUsers[user.id]["Age"] >= 55:
+        dictUsers[user.id]["Age"] = "55-59"
+    elif dictUsers[user.id]["Age"] >= 50:
+        dictUsers[user.id]["Age"] = "50-54"
+    elif dictUsers[user.id]["Age"] >= 45:
+        dictUsers[user.id]["Age"] = "45-49"
+    elif dictUsers[user.id]["Age"] >= 40:
+        dictUsers[user.id]["Age"] = "40-44"
+    elif dictUsers[user.id]["Age"] >= 35:
+        dictUsers[user.id]["Age"] = "35-39"
+    elif dictUsers[user.id]["Age"] >= 30:
+        dictUsers[user.id]["Age"] = "30-34"
+    elif dictUsers[user.id]["Age"] >= 25:
+        dictUsers[user.id]["Age"] = "25-29"
+    else:
+        dictUsers[user.id]["Age"] = "18-24"
+    
+
     logger.info(f"Edad de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
@@ -159,7 +190,7 @@ def height(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     # Weight register
     dictUsers[user.id]["Weight"] = float(update.message.text)
-    logger.info(f"Pes de {user.first_name}: {update.message.text}")
+    logger.info(f"Peso de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides (metros)?"
@@ -428,13 +459,14 @@ def end_query(update: Update, context: CallbackContext, ) -> int:
     # Database connection
     db.add_user_to_db(dictUsers[user.id])
     
+    # Execute ANN Model
+    prediction = run_ann(dictUsers[user.id])
+
     # Final Message
     update.message.reply_text(
         "Ha terminado la encuesta, sus datos han sido guradados con exito." + \
-        "\nLa función de predicción esta en proceso, favor de intentarlo en otro momento"
+        f"\nEl valor predecido es: {prediction}"
         )
-
-
 
     return ConversationHandler.END
 
