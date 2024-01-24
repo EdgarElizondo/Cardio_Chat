@@ -1,2 +1,3 @@
 # Ignorar la carpeta de presentaciones
 Presentaciones
+**/__pycache__**
