@@ -144,7 +144,7 @@ def age(update: Update, context: CallbackContext, ) -> int:
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     # Age register
-    dictUsers[user.id]["Age"] = update.message.text
+    dictUsers[user.id]["Age"] = int(update.message.text)
     logger.info(f"Edad de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
@@ -269,7 +269,7 @@ def sleep_time(update: Update, context: CallbackContext, ) -> int:
 def physical_healt(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     # Sleep time register
-    dictUsers[user.id]["Sleep_Time"] = update.message.text
+    dictUsers[user.id]["Sleep_Time"] = float(update.message.text)
     logger.info(f"Cuantas horas duerme {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
@@ -283,7 +283,7 @@ def physical_healt(update: Update, context: CallbackContext, ) -> int:
 def mental_healt(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     # Physical health register
-    dictUsers[user.id]["Physical_Health"] = update.message.text
+    dictUsers[user.id]["Physical_Health"] = int(update.message.text)
     logger.info(f"Cuantos días ha tenido problemas de salud física {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
@@ -298,7 +298,7 @@ def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Mental health register
-    dictUsers[user.id]["Mental_Health"] = update.message.text
+    dictUsers[user.id]["Mental_Health"] = int(update.message.text)
     logger.info(f"Cuantos días ha tenido problemas de salud mental {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
