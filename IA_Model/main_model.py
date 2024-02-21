@@ -16,7 +16,7 @@ class ann_model():
             'Black': 2, 'Latin': 3, 'Other': 4, 'White': 5
     }
     _health_code = {
-        'Excelente':0 , 'Regular': 1, 'Buena': 2, 'Mala': 3, 'Muy Buena': 4
+        'Excelente':0 , 'Regular': 1, 'Buena': 2, 'Mala': 3, 'Muy buena': 4
     }
 
     def __init__(self):

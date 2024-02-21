@@ -461,11 +461,28 @@ def end_query(update: Update, context: CallbackContext, ) -> int:
     
     # Execute ANN Model
     prediction = run_ann(dictUsers[user.id])
+    text_response = ""
+    # Response text based on prediction level
+    if prediction <= 5:
+        text_response = "Excelente"
+    elif prediction <= 10:
+        text_response = "Niveles aceptables"
+    elif prediction <= 15:
+        text_response = "Regular, hay que cuidarse un poco"
+    elif prediction <= 25:
+        text_response = "Corre riesgo leve"    
+    elif prediction <= 40:
+        text_response = "Corre riesgo moderado"
+    elif prediction <= 75:
+        text_response = "Corre riesgo grave"
+    else:
+        text_response = "Corre un riesgo severo"
 
     # Final Message
     update.message.reply_text(
         "Ha terminado la encuesta, sus datos han sido guradados con exito." + \
-        f"\nEl valor predecido es: {prediction}"
+        f"\nCorBot considera que corres un {prediction*100}% de riesgo de padecer una enfermedad cardivascular" + \
+        f"\n{text_response}"
         )
 
     return ConversationHandler.END
