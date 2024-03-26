@@ -21,11 +21,11 @@ dictUsers = {}
 dictUsersContinue = {}
 # Multiple choice questions answers
 boolean_answer = {"Si":1, "No":0}
-ethnic_answer = {"White": 0, "Black": 1, "Latin": 2, "Asian": 3, "Native American": 4, "Other": 5}
+ethnic_answer = {"Caucasico": 0, "Afroamericano": 1, "Latino": 2, "Asiatico": 3, "Indio Americano": 4, "Otro": 5}
 health_answer = {"Excelente": 0, "Muy buena": 1, "Buena": 2, "Regular": 3, "Mala": 4}
 
 # Default messages
-bot_name = "CorBot"
+bot_name = "Corbot"
 ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqui ==> /cancel"
 
 # ***********************************************************************************************************************************
@@ -80,7 +80,7 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
     logger.info(f"Genero de {user.first_name}: {update.message.text}")
 
     if update.message.text == 'Femenino':
-        dictUsers[user.id]["Gender"] = 1
+        dictUsers[user.id]["Gender"] = 0
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", Estas embarazada?",
             reply_markup=ReplyKeyboardMarkup(
@@ -88,7 +88,7 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
             ),
         )
     elif update.message.text == 'Masculino':
-        dictUsers[user.id]["Gender"] = 0
+        dictUsers[user.id]["Gender"] = 1
         dictUsers[user.id]["Pregnant"] = 0
         dictUsers[user.id]["Pregnancy_Weeks"] = 0
 
@@ -110,9 +110,6 @@ def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
         dictUsers[user.id]["Pregnant"] = 1
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas semanas llevas de embarazo?",
-            reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
         )
     elif update.message.text == 'No':
         dictUsers[user.id]["Pregnant"] = 0
@@ -129,7 +126,7 @@ def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if dictUsers[user.id]["Pregnant"] == 1:
         # Pregnancy weeks register
-        dictUsers[user.id]["Pregnancy_Weeks"] = update.message.text
+        dictUsers[user.id]["Pregnancy_Weeks"] = int(update.message.text)
         logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
     else:
         # Pregnancy weeks register
@@ -206,18 +203,18 @@ def bmi(weight,height):
 # QUESTION 8
 def race(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['White', 'Black', "Latin", "Asian", "Navive American", "Other"]]
+    reply_keyboard = [['Caucasico', 'Afroamericano', "Latino", "Asiatico", "Indio Americano", "Otro"]]
     # Height register
     dictUsers[user.id]["Height"] = float(update.message.text)
     logger.info(f"Estatura de {user.first_name}: {update.message.text}")
     # BMI register
     dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
-    logger.info(f"Indice de masa corporal de {user.first_name}: {update.message.text}")
+    logger.info(f"Indice de masa corporal de {user.first_name}: {dictUsers[user.id]['BMI']}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + "¿A qué etnía perteneces?",
         reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder='White, Black, Latin, Asian, Navive American, Other?'
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Caucasico, Afroamericano, Latino, Asiatico, Indio Americano, Otro?'
         ),
     )
 
@@ -463,24 +460,24 @@ def end_query(update: Update, context: CallbackContext, ) -> int:
     prediction = run_ann(dictUsers[user.id])
     text_response = ""
     # Response text based on prediction level
-    if prediction <= 5:
+    if prediction <= 0.05:
         text_response = "Excelente"
-    elif prediction <= 10:
+    elif prediction <= 0.1:
         text_response = "Niveles aceptables"
-    elif prediction <= 15:
+    elif prediction <= 0.15:
         text_response = "Regular, hay que cuidarse un poco"
-    elif prediction <= 25:
+    elif prediction <= 0.25:
         text_response = "Corre riesgo leve"    
-    elif prediction <= 40:
+    elif prediction <= 0.4:
         text_response = "Corre riesgo moderado"
-    elif prediction <= 75:
+    elif prediction <= 0.75:
         text_response = "Corre riesgo grave"
     else:
         text_response = "Corre un riesgo severo"
 
     # Final Message
     update.message.reply_text(
-        "Ha terminado la encuesta, sus datos han sido guradados con exito." + \
+        "Ha terminado la encuesta, sus datos han sido guardados con exito." + \
         f"\nCorBot considera que corres un {prediction*100}% de riesgo de padecer una enfermedad cardivascular" + \
         f"\n{text_response}"
         )
@@ -515,23 +512,23 @@ def main():
             GENDER : [MessageHandler(Filters.regex('^(Femenino|Masculino)$'), pregnant, run_async=True)],
             PREGNANT : [MessageHandler(Filters.regex('^(Si|No)$'), pregnancy_weeks, run_async=True),CommandHandler('skip',age)],
             PREGNANCYWEEKS : [MessageHandler(Filters.text & ~Filters.command, age, run_async=True),CommandHandler('skip',age)],
-            AGE : [MessageHandler(Filters.text & ~Filters.command, weight, run_async=True)],
-            WEIGHT : [MessageHandler(Filters.text & ~Filters.command, height, run_async=True)],
-            HEIGHT : [MessageHandler(Filters.text & ~Filters.command, race, run_async=True)],
-            RACE : [MessageHandler(Filters.regex('^(White|Black|Latin|Asian|Native American|Other|)$'), smoke, run_async=True)],
+            AGE : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), weight, run_async=True)],
+            WEIGHT : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), height, run_async=True)],
+            HEIGHT : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), race, run_async=True)],
+            RACE : [MessageHandler(Filters.regex('^(Caucasico|Afroamericano|Latino|Asiatico|Indio Americano|Otro|)$'), smoke, run_async=True)],
             SMOKE : [MessageHandler(Filters.regex('^(Si|No)$'), drink, run_async=True)],
             DRINK : [MessageHandler(Filters.regex('^(Si|No)$'), exercise, run_async=True)],
-            EXERCISE : [MessageHandler(Filters.text & ~Filters.command, sleep_time, run_async=True)],
-            SLEEPTIME : [MessageHandler(Filters.text & ~Filters.command, physical_healt, run_async=True)],
-            PHYSICALHEALTH : [MessageHandler(Filters.text & ~Filters.command, mental_healt, run_async=True)],
-            MENTALHEALTH : [MessageHandler(Filters.text & ~Filters.command, difficult_to_walk, run_async=True)],
+            EXERCISE : [MessageHandler(Filters.regex('^(Si|No)$'), sleep_time, run_async=True)],
+            SLEEPTIME : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), physical_healt, run_async=True)],
+            PHYSICALHEALTH : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), mental_healt, run_async=True)],
+            MENTALHEALTH : [MessageHandler(Filters.regex('^\d+(\.\d+)?$'), difficult_to_walk, run_async=True)],
             DIFWALKING : [MessageHandler(Filters.regex('^(Si|No)$'), general_health, run_async=True)],
             GENHEALTH : [MessageHandler(Filters.regex('^(Excelente|Muy buena|Buena|Regular|Mala)$'), stroke, run_async=True)],
             STROKE : [MessageHandler(Filters.regex('^(Si|No)$'), asthma, run_async=True)],
             ASTHMA : [MessageHandler(Filters.regex('^(Si|No)$'), diabetis, run_async=True)],
             DIABETIS : [MessageHandler(Filters.regex('^(Si|No)$'), kidney_disease, run_async=True)],
             KIDNEYDISEASE : [MessageHandler(Filters.regex('^(Si|No)$'), skin_cancer, run_async=True)],
-            SKINCANCER: [MessageHandler(Filters.text & ~Filters.command, end_query, run_async=True)],   
+            SKINCANCER: [MessageHandler(Filters.regex('^(Si|No)$'), end_query, run_async=True)],   
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )
@@ -541,6 +538,8 @@ def main():
     updater.idle()
 
 if __name__ == "__main__":
+    print("Here")
     logger = log(__name__)
+    print("Here")
     db = database(bot_name)
     main()

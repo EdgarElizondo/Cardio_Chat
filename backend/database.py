@@ -1,28 +1,35 @@
 import pymongo
 
 class database:
-    def __init__(self,name) -> None:
+    def __init__(self,name,cloud=True) -> None:
         self.name = name
-        
-        self.MONGODB_HOST = '127.0.0.1'
-        self.MONGODB_PORT = '27017'
-        self.MONGODB_TIMEOUT = 1000
-        self.URI_CONNECTION = "mongodb://" + self.MONGODB_HOST + ":" + self.MONGODB_PORT + "/"
-    
+        self.cloud = cloud
+        if self.cloud:
+            self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+            # self.URI_CONNECTION = "mongodb+srv://liamedina98:Lia2145.@corbot.j8mkkdi.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+            # self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+        else:
+            self.MONGODB_HOST = '127.0.0.1'
+            self.MONGODB_PORT = '27017'
+            self.MONGODB_TIMEOUT = 1000
+            self.URI_CONNECTION = "mongodb://" + self.MONGODB_HOST + ":" + self.MONGODB_PORT + "/"
+
     def _connect(self):
+        
+        # Create a new client and connect to the server
+        client = pymongo.MongoClient(self.uri)
+        
+        # Send a ping to confirm a successful connection
         try:
-            client = pymongo.MongoClient(self.URI_CONNECTION, serverSelectionTimeoutMS=self.MONGODB_TIMEOUT)
             client.server_info()
-            print('OK -- Connected to MongoDB at server %s' % self.MONGODB_HOST)
+            client.admin.command('ping')
+            print("Pinged your deployment. You successfully connected to MongoDB!")
             db = client[self.name]
             return db
-        except pymongo.errors.ServerSelectionTimeoutError as error:
-            print('Error with MongoDB connection: %s' % error)
-            return -1
-        except pymongo.errors.ConnectionFailure as error:
-            print('Could not connect to MongoDB: %s' % error)
-            return -1
         
+        except Exception as e:
+            print(e)
+
     def add_user_to_db(self,user_data):
         
         user = {"userid":user_data["userid"],

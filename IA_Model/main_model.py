@@ -12,8 +12,8 @@ class ann_model():
             '55-59':7, '60-64':8, '65-69':9, '70-74':10, '75-79':11, '80+':12,
         }
     _ethnic_code = {
-            'Navive American': 0, 'Asian': 1, 
-            'Black': 2, 'Latin': 3, 'Other': 4, 'White': 5
+            'Indio Americano': 0, 'Asiatico': 1, 
+            'Afroamericano': 2, 'Latino': 3, 'Otro': 4, 'Caucasico': 5
     }
     _health_code = {
         'Excelente':0 , 'Regular': 1, 'Buena': 2, 'Mala': 3, 'Muy buena': 4
