@@ -1,3 +1,7 @@
 # Ignorar la carpeta de presentaciones
 Presentaciones
 **/__pycache__**
+run_predictions.py
+New_data.csv
+**/CorBot.new_data.csv
+**/.ipynb_checkpoints
