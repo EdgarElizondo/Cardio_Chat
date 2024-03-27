@@ -5,7 +5,7 @@ class database:
         self.name = name
         self.cloud = cloud
         if self.cloud:
-            self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+            self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:Er23El10@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
             # self.URI_CONNECTION = "mongodb+srv://liamedina98:Lia2145.@corbot.j8mkkdi.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
             # self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
         else:
@@ -17,7 +17,7 @@ class database:
     def _connect(self):
         
         # Create a new client and connect to the server
-        client = pymongo.MongoClient(self.uri)
+        client = pymongo.MongoClient(self.URI_CONNECTION)
         
         # Send a ping to confirm a successful connection
         try:

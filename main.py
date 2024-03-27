@@ -31,12 +31,9 @@ ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqu
 # ***********************************************************************************************************************************
 # ************************************************************ QUESTIONS ************************************************************
 # ***********************************************************************************************************************************
-
-# QUESTION 1
-def start(update: Update, context: CallbackContext, ) -> int:
-    reply_keyboard = [['Si', 'No']]
-    user = update.message.chat
-    dictUsers[user.id] = {}
+"""
+# Greetings
+def greeting(update: Update, context: CallbackContext) -> int:
     update.message.reply_text(
         "Hola " + str(user.first_name) + " " + str(user.last_name) 
         + f"\nSoy {bot_name} estoy aquí para ayudarte a predecir si padeces de alguna enfermedad en el corazón con base a unas preguntas, Quieres continuar?" \
@@ -45,7 +42,21 @@ def start(update: Update, context: CallbackContext, ) -> int:
             reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
         ),
     )
-
+"""
+# QUESTION 1
+def start(update: Update, context: CallbackContext, ) -> int:
+    reply_keyboard = [['Si', 'No']]
+    user = update.message.chat
+    dictUsers[user.id] = {}
+    
+    update.message.reply_text(
+        "Hola " + str(user.first_name) + " " + str(user.last_name) 
+        + f"\nSoy {bot_name} estoy aquí para ayudarte a predecir si padeces de alguna enfermedad en el corazón con base a unas preguntas, Quieres continuar?" \
+        + ask_cancel_message,
+        reply_markup=ReplyKeyboardMarkup(
+            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
+        ),
+    )
     return START
 
 # QUESTION 2
@@ -63,6 +74,7 @@ def gender(update: Update, context: CallbackContext, ) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Femenino o Masculino?'
             ),
         )
+
     elif update.message.text == "No":
         update.message.reply_text(
             "Gracias " + str(user.first_name) + " " + str(user.last_name) + \
@@ -205,7 +217,10 @@ def race(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     reply_keyboard = [['Caucasico', 'Afroamericano', "Latino", "Asiatico", "Indio Americano", "Otro"]]
     # Height register
-    dictUsers[user.id]["Height"] = float(update.message.text)
+    if float(update.message.text) > 100:
+        dictUsers[user.id]["Height"] = float(update.message.text)/100
+    else:
+        dictUsers[user.id]["Height"] = float(update.message.text)
     logger.info(f"Estatura de {user.first_name}: {update.message.text}")
     # BMI register
     dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
@@ -453,11 +468,11 @@ def end_query(update: Update, context: CallbackContext, ) -> int:
     dictUsers[user.id]["Skin_Cancer"] = boolean_answer[update.message.text]
     logger.info(f"Tiene cancer de piel {user.first_name}: {update.message.text}")
     
-    # Database connection
-    db.add_user_to_db(dictUsers[user.id])
-    
+    print(dictUsers[user.id])
+
     # Execute ANN Model
     prediction = run_ann(dictUsers[user.id])
+    dictUsers[user.id]["Prediction"] = prediction
     text_response = ""
     # Response text based on prediction level
     if prediction <= 0.05:
@@ -474,6 +489,9 @@ def end_query(update: Update, context: CallbackContext, ) -> int:
         text_response = "Corre riesgo grave"
     else:
         text_response = "Corre un riesgo severo"
+
+    # Database connection
+    db.add_user_to_db(dictUsers[user.id])
 
     # Final Message
     update.message.reply_text(
@@ -506,7 +524,7 @@ def main():
     
     # Add conversation handler with the states GENDER, PHOTO, LOCATION and BIO
     question_handler = ConversationHandler(
-        entry_points = [CommandHandler('start',start)],
+        entry_points = [MessageHandler(Filters.all,start)],
         states = {
             START : [MessageHandler(Filters.regex('^(Si|No)$'), gender, run_async=True)],
             GENDER : [MessageHandler(Filters.regex('^(Femenino|Masculino)$'), pregnant, run_async=True)],
@@ -538,8 +556,6 @@ def main():
     updater.idle()
 
 if __name__ == "__main__":
-    print("Here")
     logger = log(__name__)
-    print("Here")
     db = database(bot_name)
     main()
