@@ -64,7 +64,8 @@ def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no","/skip"]:
         update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
-                                  + " Opciones válidas: Si, No")
+                                  + " Opciones válidas: Si, No." \
+                                  + " En caso de que aparezca la opcion skip, seleccionarla para continuar.")
         dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
         return PREGNANCYWEEKS
     dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
@@ -75,9 +76,17 @@ def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.isnumeric() == False) & (update.message.text != "/skip"):
         update.message.reply_text("Respuesta no valida." \
-                                  + " Opciones válidas: unicamente valores númericos entre 0-36")
+                                  + " Opciones válidas: unicamente valores númericos entre 0-36." \
+                                  + " En caso de que aparezca la opcion skip, seleccionarla para continuar.")
         dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
         return AGE
+    elif update.message.text != "/skip":
+        if (float(update.message.text) < 0) | (float(update.message.text) > 36):
+            update.message.reply_text("Respuesta no valida." \
+                                    + " Opciones válidas: unicamente valores númericos entre 0-36." \
+                                    + " En caso de que aparezca la opcion skip, seleccionarla para continuar.")
+            dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
+            return AGE
     dictUsers[user.id] = msg["age"](dictUsers, update, logger)
     return WEIGHT
 
@@ -85,6 +94,11 @@ def age(update: Update, context: CallbackContext, ) -> int:
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-100")
+        dictUsers[user.id] = msg["age"](dictUsers, update, logger)
+        return WEIGHT
+    elif (float(update.message.text) < 0) | (float(update.message.text) > 100):
         update.message.reply_text("Respuesta no valida." \
                                   + " Opciones válidas: unicamente valores númericos entre 0-100")
         dictUsers[user.id] = msg["age"](dictUsers, update, logger)
@@ -100,6 +114,11 @@ def height(update: Update, context: CallbackContext, ) -> int:
                                   + " Opciones válidas: unicamente valores númericos entre 10-250")
         dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
         return HEIGHT
+    elif (float(update.message.text) < 10) | (float(update.message.text) > 250):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 10-250")
+        dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
+        return HEIGHT
     dictUsers[user.id] = msg["height"](dictUsers, update, logger)
     return RACE
 
@@ -107,6 +126,11 @@ def height(update: Update, context: CallbackContext, ) -> int:
 def race(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0.50-2.50")
+        dictUsers[user.id] = msg["height"](dictUsers, update, logger)
+        return RACE
+    elif (float(update.message.text) < 0.5) | (float(update.message.text) > 2.5):
         update.message.reply_text("Respuesta no valida." \
                                   + " Opciones válidas: unicamente valores númericos entre 0.50-2.50")
         dictUsers[user.id] = msg["height"](dictUsers, update, logger)
@@ -166,6 +190,11 @@ def physical_health(update: Update, context: CallbackContext, ) -> int:
                                   + " Opciones válidas: unicamente valores númericos entre 0-24")
         dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
         return PHYSICALHEALTH
+    elif (float(update.message.text) < 0) | (float(update.message.text) > 24):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-24")
+        dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
+        return PHYSICALHEALTH
     dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
     return MENTALHEALTH
 
@@ -177,6 +206,11 @@ def mental_health(update: Update, context: CallbackContext, ) -> int:
                                   + " Opciones válidas: unicamente valores númericos entre 0-31")
         dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
         return MENTALHEALTH
+    elif (float(update.message.text) < 0) | (float(update.message.text) > 31):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-31")
+        dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
+        return MENTALHEALTH
     dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
     return DIFWALKING
 
@@ -184,6 +218,11 @@ def mental_health(update: Update, context: CallbackContext, ) -> int:
 def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-31")
+        dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
+        return DIFWALKING
+    elif (float(update.message.text) < 0) | (float(update.message.text) > 31):
         update.message.reply_text("Respuesta no valida." \
                                   + " Opciones válidas: unicamente valores númericos entre 0-31")
         dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
