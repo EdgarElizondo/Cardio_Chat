@@ -41,6 +41,8 @@ def start(update: Update, context: CallbackContext, ) -> int:
 def gender(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["start"](dictUsers, update)
         return GENDER
     dictUsers[user.id] = msg["gender"](dictUsers, update, logger, ConversationHandler)
@@ -50,6 +52,8 @@ def gender(update: Update, context: CallbackContext, ) -> int:
 def pregnant(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["masculino","femenino"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Masculino, Femenino")
         dictUsers[user.id] = msg["gender"](dictUsers, update, logger, ConversationHandler)
         return PREGNANT
     dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
@@ -59,6 +63,8 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
 def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no","/skip"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
         return PREGNANCYWEEKS
     dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
@@ -68,6 +74,8 @@ def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
 def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.isnumeric() == False) & (update.message.text != "/skip"):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-36")
         dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
         return AGE
     dictUsers[user.id] = msg["age"](dictUsers, update, logger)
@@ -77,6 +85,8 @@ def age(update: Update, context: CallbackContext, ) -> int:
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-100")
         dictUsers[user.id] = msg["age"](dictUsers, update, logger)
         return WEIGHT
     dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
@@ -86,6 +96,8 @@ def weight(update: Update, context: CallbackContext, ) -> int:
 def height(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 10-250")
         dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
         return HEIGHT
     dictUsers[user.id] = msg["height"](dictUsers, update, logger)
@@ -95,6 +107,8 @@ def height(update: Update, context: CallbackContext, ) -> int:
 def race(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0.50-2.50")
         dictUsers[user.id] = msg["height"](dictUsers, update, logger)
         return RACE
     dictUsers[user.id] = msg["race"](dictUsers, update, logger)
@@ -104,6 +118,8 @@ def race(update: Update, context: CallbackContext, ) -> int:
 def smoke(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["caucasico","afroamericano","latino","asiatico","indio americano","otro"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Caucasico, Afroamericano, Latino, Asiatico, Indio Americano, Otro")
         dictUsers[user.id] = msg["race"](dictUsers, update, logger)
         return SMOKE
     dictUsers[user.id] = msg["smoke"](dictUsers, update, logger)
@@ -113,6 +129,8 @@ def smoke(update: Update, context: CallbackContext, ) -> int:
 def drink(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["smoke"](dictUsers, update, logger)
         return DRINK
     dictUsers[user.id] = msg["drink"](dictUsers, update, logger)
@@ -122,6 +140,8 @@ def drink(update: Update, context: CallbackContext, ) -> int:
 def exercise(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["drink"](dictUsers, update, logger)
         return EXERCISE
     dictUsers[user.id] = msg["exercise"](dictUsers, update, logger)
@@ -131,6 +151,8 @@ def exercise(update: Update, context: CallbackContext, ) -> int:
 def sleep_time(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["exercise"](dictUsers, update, logger)
         return SLEEPTIME
     dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
@@ -140,6 +162,8 @@ def sleep_time(update: Update, context: CallbackContext, ) -> int:
 def physical_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-24")
         dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
         return PHYSICALHEALTH
     dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
@@ -149,6 +173,8 @@ def physical_health(update: Update, context: CallbackContext, ) -> int:
 def mental_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-31")
         dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
         return MENTALHEALTH
     dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
@@ -158,6 +184,8 @@ def mental_health(update: Update, context: CallbackContext, ) -> int:
 def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if (update.message.text.replace(".","").isnumeric() == False):
+        update.message.reply_text("Respuesta no valida." \
+                                  + " Opciones válidas: unicamente valores númericos entre 0-31")
         dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
         return DIFWALKING
     dictUsers[user.id] = msg["difficult_to_walk"](dictUsers, update, logger)
@@ -167,6 +195,8 @@ def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
 def general_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["difficult_to_walk"](dictUsers, update, logger)
         return GENHEALTH
     dictUsers[user.id] = msg["general_health"](dictUsers, update, logger)
@@ -176,6 +206,8 @@ def general_health(update: Update, context: CallbackContext, ) -> int:
 def stroke(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["excelente", "muy buena", "buena", "regular", "mala"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Excelente, Muy buena, Buena, Regular, Mala")
         dictUsers[user.id] = msg["general_health"](dictUsers, update, logger)
         return STROKE
     dictUsers[user.id] = msg["stroke"](dictUsers, update, logger)
@@ -185,6 +217,8 @@ def stroke(update: Update, context: CallbackContext, ) -> int:
 def asthma(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["stroke"](dictUsers, update, logger)
         return ASTHMA
     dictUsers[user.id] = msg["asthma"](dictUsers, update, logger)
@@ -194,6 +228,8 @@ def asthma(update: Update, context: CallbackContext, ) -> int:
 def diabetis(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["asthma"](dictUsers, update, logger)
         return DIABETIS
     dictUsers[user.id] = msg["diabetis"](dictUsers, update, logger)
@@ -203,6 +239,8 @@ def diabetis(update: Update, context: CallbackContext, ) -> int:
 def kidney_disease(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["diabetis"](dictUsers, update, logger)
         return KIDNEYDISEASE
     dictUsers[user.id] = msg["kidney_disease"](dictUsers, update, logger)
@@ -212,6 +250,8 @@ def kidney_disease(update: Update, context: CallbackContext, ) -> int:
 def skin_cancer(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["kidney_disease"](dictUsers, update, logger)
         return SKINCANCER
     dictUsers[user.id] = msg["skin_cancer"](dictUsers, update, logger)
@@ -220,6 +260,8 @@ def skin_cancer(update: Update, context: CallbackContext, ) -> int:
 def prediction(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     if update.message.text.lower() not in ["si","no"]:
+        update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
+                                  + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["skin_cancer"](dictUsers, update, logger)
         return PREDICTION
     
