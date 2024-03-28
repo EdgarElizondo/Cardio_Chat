@@ -31,61 +31,99 @@ ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqu
 # ***********************************************************************************************************************************
 # ************************************************************ QUESTIONS ************************************************************
 # ***********************************************************************************************************************************
-
 # QUESTION 1
 def start(update: Update, context: CallbackContext, ) -> int:
-    msg["start"](dictUsers, update, context)
+    user = update.message.chat
+    dictUsers[user.id] = msg["start"](dictUsers, update)
     return GENDER
 
 # QUESTION 2
 def gender(update: Update, context: CallbackContext, ) -> int:
-    
-    if str(update.message.text).lower() not in ["si","no"]:
-        msg["start"](dictUsers, update, context)
+    user = update.message.chat
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["start"](dictUsers, update)
         return GENDER
-    else:
-        msg["gender"](dictUsers, update, logger, ConversationHandler)
-        return PREGNANT
-
-
+    dictUsers[user.id] = msg["gender"](dictUsers, update, logger, ConversationHandler)
+    return PREGNANT
+    
 # QUESTION 3
 def pregnant(update: Update, context: CallbackContext, ) -> int:
-    if str(update.message.text).lower() not in ["masculino","femenino"]:
-        msg["gender"](dictUsers, update, logger, ConversationHandler)
+    user = update.message.chat
+    if update.message.text.lower() not in ["masculino","femenino"]:
+        dictUsers[user.id] = msg["gender"](dictUsers, update, logger, ConversationHandler)
         return PREGNANT
-    else:
-        msg["pregnant"](dictUsers, update, logger)
-        return PREGNANCYWEEKS
+    dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
+    return PREGNANCYWEEKS
 
 # QUESTION 4
 def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
-    if str(update.message.text).lower() not in ["si","no"]:
-        msg["pregnant"](dictUsers, update, logger)
+    user = update.message.chat
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
         return PREGNANCYWEEKS
-    else:
-        msg["pregnancy_weeks"](dictUsers, update, logger)
-        return AGE
+    dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
+    return AGE
+
 
 # QUESTION 5
 def age(update: Update, context: CallbackContext, ) -> int:
-    print(update.message.text.isnumeric())
-    if ~update.message.text.isnumeric():
-        msg["pregnancy_weeks"](dictUsers, update, logger)
-        return AGE
+    user = update.message.chat
+    if dictUsers[user.id]["Pregnant"] == 1:
+        # Pregnancy weeks register
+        dictUsers[user.id]["Pregnancy_Weeks"] = int(update.message.text)
+        logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
     else:
-        msg["age"](dictUsers, update, logger)
-        return WEIGHT
+        # Pregnancy weeks register
+        logger.info(f"Semanas de embarazo tiene {user.first_name}: 0")
+
+    update.message.reply_text(
+        str(user.first_name) + " " + str(user.last_name) + ".¿Cuantos años tienes?"
+    )
+
+    return WEIGHT
 
 
 # QUESTION 6
 def weight(update: Update, context: CallbackContext, ) -> int:
-    if str(update.message.text).lower() not in ["si","no"]:
-        msg["age"](dictUsers, update, logger)
-        return WEIGHT
+    user = update.message.chat
+    # Age register
+    dictUsers[user.id]["Age"] = int(update.message.text)
+    # Se categoriza la edad para coincidir con el dataset de la red neuronal
+    if dictUsers[user.id]["Age"] >= 80:
+        dictUsers[user.id]["Age"] = "80+"
+    elif dictUsers[user.id]["Age"] >= 75:
+        dictUsers[user.id]["Age"] = "75-79"
+    elif dictUsers[user.id]["Age"] >= 70:
+        dictUsers[user.id]["Age"] = "70-74"
+    elif dictUsers[user.id]["Age"] >= 65:
+        dictUsers[user.id]["Age"] = "65-69"
+    elif dictUsers[user.id]["Age"] >= 60:
+        dictUsers[user.id]["Age"] = "60-64"
+    elif dictUsers[user.id]["Age"] >= 55:
+        dictUsers[user.id]["Age"] = "55-59"
+    elif dictUsers[user.id]["Age"] >= 50:
+        dictUsers[user.id]["Age"] = "50-54"
+    elif dictUsers[user.id]["Age"] >= 45:
+        dictUsers[user.id]["Age"] = "45-49"
+    elif dictUsers[user.id]["Age"] >= 40:
+        dictUsers[user.id]["Age"] = "40-44"
+    elif dictUsers[user.id]["Age"] >= 35:
+        dictUsers[user.id]["Age"] = "35-39"
+    elif dictUsers[user.id]["Age"] >= 30:
+        dictUsers[user.id]["Age"] = "30-34"
+    elif dictUsers[user.id]["Age"] >= 25:
+        dictUsers[user.id]["Age"] = "25-29"
     else:
-        msg["weight"](dictUsers, update, logger)
-        print(dictUsers)
-        return HEIGHT
+        dictUsers[user.id]["Age"] = "18-24"
+    
+
+    logger.info(f"Edad de {user.first_name}: {update.message.text}")
+
+    update.message.reply_text(
+        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas (Kilogramos)?"
+    )
+
+    return HEIGHT
 
 
 # QUESTION 7
@@ -420,27 +458,27 @@ def main():
     question_handler = ConversationHandler(
         entry_points = [MessageHandler(Filters.all,start)],
         states = {
-            GENDER :            [MessageHandler(Filters.all, gender, run_async=True)],
-            PREGNANT :          [MessageHandler(Filters.all, pregnant, run_async=True)],
-            PREGNANCYWEEKS :    [MessageHandler(Filters.all, pregnancy_weeks, run_async=True),CommandHandler('skip',age)],
-            AGE :               [MessageHandler(Filters.all, age, run_async=True),CommandHandler('skip',age)],
-            WEIGHT :            [MessageHandler(Filters.all, weight, run_async=True)],
-            HEIGHT :            [MessageHandler(Filters.all, height, run_async=True)],
-            RACE :              [MessageHandler(Filters.all, race, run_async=True)],
-            SMOKE :             [MessageHandler(Filters.all, smoke, run_async=True)],
-            DRINK :             [MessageHandler(Filters.all, drink, run_async=True)],
-            EXERCISE :          [MessageHandler(Filters.all, exercise, run_async=True)],
-            SLEEPTIME :         [MessageHandler(Filters.all, sleep_time, run_async=True)],
-            PHYSICALHEALTH :    [MessageHandler(Filters.all, physical_healt, run_async=True)],
-            MENTALHEALTH :      [MessageHandler(Filters.all, mental_healt, run_async=True)],
-            DIFWALKING :        [MessageHandler(Filters.all, difficult_to_walk, run_async=True)],
-            GENHEALTH :         [MessageHandler(Filters.all, general_health, run_async=True)],
-            STROKE :            [MessageHandler(Filters.all, stroke, run_async=True)],
-            ASTHMA :            [MessageHandler(Filters.all, asthma, run_async=True)],
-            DIABETIS :          [MessageHandler(Filters.all, diabetis, run_async=True)],
-            KIDNEYDISEASE :     [MessageHandler(Filters.all, kidney_disease, run_async=True)],
-            SKINCANCER :        [MessageHandler(Filters.all, skin_cancer, run_async=True)],
-            PREDICTION:         [MessageHandler(Filters.all, prediction, run_async=True)],   
+            GENDER :            [MessageHandler(Filters.text, gender, run_async=True)],
+            PREGNANT :          [MessageHandler(Filters.text, pregnant, run_async=True)],
+            PREGNANCYWEEKS :    [MessageHandler(Filters.text, pregnancy_weeks, run_async=True),CommandHandler('skip',age)],
+            AGE :               [MessageHandler(Filters.text & ~Filters.command, age, run_async=True),CommandHandler('skip',age)],
+            WEIGHT :            [MessageHandler(Filters.text, weight, run_async=True)],
+            HEIGHT :            [MessageHandler(Filters.text, height, run_async=True)],
+            RACE :              [MessageHandler(Filters.text, race, run_async=True)],
+            SMOKE :             [MessageHandler(Filters.text, smoke, run_async=True)],
+            DRINK :             [MessageHandler(Filters.text, drink, run_async=True)],
+            EXERCISE :          [MessageHandler(Filters.text, exercise, run_async=True)],
+            SLEEPTIME :         [MessageHandler(Filters.text, sleep_time, run_async=True)],
+            PHYSICALHEALTH :    [MessageHandler(Filters.text, physical_healt, run_async=True)],
+            MENTALHEALTH :      [MessageHandler(Filters.text, mental_healt, run_async=True)],
+            DIFWALKING :        [MessageHandler(Filters.text, difficult_to_walk, run_async=True)],
+            GENHEALTH :         [MessageHandler(Filters.text, general_health, run_async=True)],
+            STROKE :            [MessageHandler(Filters.text, stroke, run_async=True)],
+            ASTHMA :            [MessageHandler(Filters.text, asthma, run_async=True)],
+            DIABETIS :          [MessageHandler(Filters.text, diabetis, run_async=True)],
+            KIDNEYDISEASE :     [MessageHandler(Filters.text, kidney_disease, run_async=True)],
+            SKINCANCER :        [MessageHandler(Filters.text, skin_cancer, run_async=True)],
+            PREDICTION:         [MessageHandler(Filters.text, prediction, run_async=True)],   
         },
         fallbacks=[CommandHandler('cancel', cancel)],
     )

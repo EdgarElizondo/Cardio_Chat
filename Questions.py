@@ -4,7 +4,7 @@ from telegram import ReplyKeyboardMarkup
 boolean_answer = {"Si":1, "No":0}
 
 # QUESTION 1
-def start(dictUsers, update, context):
+def start(dictUsers, update):
     reply_keyboard = [['Si', 'No']]
     user = update.message.chat
     dictUsers[user.id] = {}
@@ -17,17 +17,19 @@ def start(dictUsers, update, context):
             reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
         ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 2
-def gender(dictUsers, update, logger, ConversationHandler) -> int:
-    
+def gender(dictUsers, update, logger, ConversationHandler):
     user = update.message.chat
     reply_keyboard = [['Femenino', 'Masculino']]
     # User register
-    dictUsers[user.id]["userid"] = user.id
-    logger.info(f"Acepto la conversacion {user.first_name}: {update.message.text}")
+    if "userid" not in dictUsers[user.id]:
+        dictUsers[user.id]["userid"] = user.id
+        dictUsers[user.id]["agreed"] = update.message.text
+        logger.info(f"Acepto la conversacion {user.first_name}: {update.message.text}")
     
-    if update.message.text == "Si":
+    if dictUsers[user.id]["agreed"] == "Si":
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", ¿Cual es tu sexo?",
             reply_markup=ReplyKeyboardMarkup(
@@ -35,29 +37,35 @@ def gender(dictUsers, update, logger, ConversationHandler) -> int:
             ),
         )
 
-    elif update.message.text == "No":
+    elif dictUsers[user.id]["agreed"] == "No":
         update.message.reply_text(
             "Gracias " + str(user.first_name) + " " + str(user.last_name) + \
             " por tomarte tu tiempo, que tengas buen dia"
         )
         return ConversationHandler.END
 
+    return dictUsers[user.id]
+
 # QUESTION 3
-def pregnant(dictUsers, update, logger) -> int:
+def pregnant(dictUsers, update, logger):
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
-    logger.info(f"Genero de {user.first_name}: {update.message.text}")
 
-    if update.message.text == 'Femenino':
-        dictUsers[user.id]["Gender"] = 0
+    if "Gender" not in dictUsers[user.id]:
+        if update.message.text == 'Femenino':
+            dictUsers[user.id]["Gender"] = 0
+        else:
+            dictUsers[user.id]["Gender"] = 1
+        logger.info(f"Genero de {user.first_name}: {update.message.text}")
+    
+    if dictUsers[user.id]["Gender"] == 0:
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", Estas embarazada?",
             reply_markup=ReplyKeyboardMarkup(
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
         )
-    elif update.message.text == 'Masculino':
-        dictUsers[user.id]["Gender"] = 1
+    elif dictUsers[user.id]["Gender"] == 1:
         dictUsers[user.id]["Pregnant"] = 0
         dictUsers[user.id]["Pregnancy_Weeks"] = 0
 
@@ -65,24 +73,29 @@ def pregnant(dictUsers, update, logger) -> int:
             " " + str(user.first_name) + " " + str(user.last_name) + \
             " toca aqui por favor para avanzar ==> /skip.",
         )
-
+    
+    return dictUsers[user.id]
+    
 # QUESTION 4
-def pregnancy_weeks(dictUsers, update, logger) -> int:
+def pregnancy_weeks(dictUsers, update, logger):
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
-    logger.info(f"Esta embarazado {user.first_name}: {update.message.text}")
+    if "Pregnant" not in dictUsers[user.id]:
+        dictUsers[user.id]["Pregnant"] = update.message.text
+        logger.info(f"Esta embarazado {user.first_name}: {update.message.text}")
 
-    if update.message.text == 'Si':
+    if dictUsers[user.id]["Pregnant"] == 'Si':
         dictUsers[user.id]["Pregnant"] = 1
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas semanas llevas de embarazo?",
         )
-    elif update.message.text == 'No':
+    elif dictUsers[user.id]["Pregnant"] == 'No':
         dictUsers[user.id]["Pregnant"] = 0
         update.message.reply_text(
             " " + str(user.first_name) + " " + str(user.last_name) + \
             " toca aqui por favor para avanzar ==> /skip.",
         )
+    return dictUsers[user.id]
 
 # QUESTION 5
 def age(dictUsers, update, logger) -> int:
@@ -98,6 +111,7 @@ def age(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ".¿Cuantos años tienes?"
     )
+    return dictUsers[user.id]
 
 # QUESTION 6
 def weight(dictUsers, update, logger) -> int:
@@ -138,6 +152,7 @@ def weight(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas (Kilogramos)?"
     )
+    return dictUsers[user.id]
 
 # QUESTION 7
 def height(dictUsers, update, logger) -> int:
@@ -149,6 +164,7 @@ def height(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides (metros)?"
     )
+    return dictUsers[user.id]
 
 def bmi(weight,height):
     return round(weight/(height**2),2)
@@ -173,6 +189,7 @@ def race(dictUsers, update, logger) -> int:
             reply_keyboard, one_time_keyboard=True, input_field_placeholder='Caucasico, Afroamericano, Latino, Asiatico, Indio Americano, Otro?'
         ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 9
 def smoke(dictUsers, update, logger) -> int:
@@ -189,6 +206,7 @@ def smoke(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 10
 def drink(dictUsers, update, logger) -> int:
@@ -207,6 +225,7 @@ def drink(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 11
 def exercise(dictUsers, update, logger) -> int:
@@ -222,6 +241,7 @@ def exercise(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 12
 def sleep_time(dictUsers, update, logger) -> int:
@@ -233,6 +253,7 @@ def sleep_time(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas horas duermes en promedio?"
     )
+    return dictUsers[user.id]
 
 # QUESTION 13
 def physical_health(dictUsers, update, logger) -> int:
@@ -244,6 +265,7 @@ def physical_health(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has tenido alguna enfermedad o lesión. ¿Cuantos días duró?"
     )
+    return dictUsers[user.id]
 
 # QUESTION 14
 def mental_health(dictUsers, update, logger) -> int:
@@ -255,6 +277,7 @@ def mental_health(dictUsers, update, logger) -> int:
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has sentido problemas con tu salud mental. ¿Cuantos días?"
     )
+    return dictUsers[user.id]
 
 # QUESTION 15
 def difficult_to_walk(dictUsers, update, logger) -> int:
@@ -270,6 +293,7 @@ def difficult_to_walk(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 16
 def general_health(dictUsers, update, logger) -> int:
@@ -285,6 +309,7 @@ def general_health(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 17
 def stroke(dictUsers, update, logger) -> int:
@@ -300,6 +325,7 @@ def stroke(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 18
 def asthma(dictUsers, update, logger) -> int:
@@ -315,6 +341,7 @@ def asthma(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 19
 def diabetis(dictUsers, update, logger) -> int:
@@ -330,9 +357,10 @@ def diabetis(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 20
-def kidney_disease(dictUsers, update, logger ) -> int:
+def kidney_disease(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Diabetis register
@@ -345,6 +373,7 @@ def kidney_disease(dictUsers, update, logger ) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 # QUESTION 21
 def skin_cancer(dictUsers, update, logger) -> int:
@@ -360,6 +389,7 @@ def skin_cancer(dictUsers, update, logger) -> int:
                 reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
             ),
     )
+    return dictUsers[user.id]
 
 chat_message = {"start":start,
                 "gender":gender,
