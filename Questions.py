@@ -200,8 +200,9 @@ def smoke(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Race register
-    dictUsers[user.id]["Race"] = update.message.text
-    logger.info(f"Etnía de {user.first_name}: {update.message.text}")
+    if "Race" not in dictUsers[user.id]:
+        dictUsers[user.id]["Race"] = update.message.text
+        logger.info(f"Etnía de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Eres fumador?" + \
@@ -217,8 +218,9 @@ def drink(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Smoke register
-    dictUsers[user.id]["Smoke"] = boolean_answer[update.message.text]
-    logger.info(f"Es fumador {user.first_name}: {update.message.text}")
+    if "Smoke" not in dictUsers[user.id]:
+        dictUsers[user.id]["Smoke"] = boolean_answer[update.message.text]
+        logger.info(f"Es fumador {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Eres tomador habitual?" + \
@@ -236,8 +238,9 @@ def exercise(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Drink register
-    dictUsers[user.id]["Drink"] = boolean_answer[update.message.text]
-    logger.info(f"Es bebedor habitual {user.first_name}: {update.message.text}")
+    if "Drink" not in dictUsers[user.id]:
+        dictUsers[user.id]["Drink"] = boolean_answer[update.message.text]
+        logger.info(f"Es bebedor habitual {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Has ejercitado durante el último mes?",
@@ -251,8 +254,9 @@ def exercise(dictUsers, update, logger) -> int:
 def sleep_time(dictUsers, update, logger) -> int:
     user = update.message.chat
     # Exercise register
-    dictUsers[user.id]["Exercise"] = boolean_answer[update.message.text]
-    logger.info(f"Se ejercita {user.first_name}: {update.message.text}")
+    if "Exercise" not in dictUsers[user.id]:
+        dictUsers[user.id]["Exercise"] = boolean_answer[update.message.text]
+        logger.info(f"Se ejercita {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas horas duermes en promedio?"
@@ -263,8 +267,9 @@ def sleep_time(dictUsers, update, logger) -> int:
 def physical_health(dictUsers, update, logger) -> int:
     user = update.message.chat
     # Sleep time register
-    dictUsers[user.id]["Sleep_Time"] = float(update.message.text)
-    logger.info(f"Cuantas horas duerme {user.first_name}: {update.message.text}")
+    if "Sleep_Time" not in dictUsers[user.id]:
+        dictUsers[user.id]["Sleep_Time"] = float(update.message.text)
+        logger.info(f"Cuantas horas duerme {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has tenido alguna enfermedad o lesión. ¿Cuantos días duró?"
@@ -275,8 +280,9 @@ def physical_health(dictUsers, update, logger) -> int:
 def mental_health(dictUsers, update, logger) -> int:
     user = update.message.chat
     # Physical health register
-    dictUsers[user.id]["Physical_Health"] = int(update.message.text)
-    logger.info(f"Cuantos días ha tenido problemas de salud física {user.first_name}: {update.message.text}")
+    if "Physical_Health" not in dictUsers[user.id]:
+        dictUsers[user.id]["Physical_Health"] = int(update.message.text)
+        logger.info(f"Cuantos días ha tenido problemas de salud física {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has sentido problemas con tu salud mental. ¿Cuantos días?"
@@ -288,8 +294,9 @@ def difficult_to_walk(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Mental health register
-    dictUsers[user.id]["Mental_Health"] = int(update.message.text)
-    logger.info(f"Cuantos días ha tenido problemas de salud mental {user.first_name}: {update.message.text}")
+    if "Mental_Health" not in dictUsers[user.id]:
+        dictUsers[user.id]["Mental_Health"] = int(update.message.text)
+        logger.info(f"Cuantos días ha tenido problemas de salud mental {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes problemas graves para caminar o subir escaleras?",
@@ -304,8 +311,9 @@ def general_health(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Excelente', 'Muy buena', 'Buena', 'Regular', 'Mala']]
     # Difficult walking register
-    dictUsers[user.id]["Difficult_Walking"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene problemas para caminar {user.first_name}: {update.message.text}")
+    if "Difficult_Walking" not in dictUsers[user.id]:
+        dictUsers[user.id]["Difficult_Walking"] = boolean_answer[update.message.text]
+        logger.info(f"Tiene problemas para caminar {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", En términos generales, ¿Cómo considerarías tu salud?",
@@ -320,8 +328,9 @@ def stroke(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # General health register
-    dictUsers[user.id]["General_Health"] = update.message.text
-    logger.info(f"Salud general de {user.first_name}: {update.message.text}")
+    if "General_Health" not in dictUsers[user.id]:
+        dictUsers[user.id]["General_Health"] = update.message.text
+        logger.info(f"Salud general de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Alguna vez has tenido un infarto?",
@@ -336,8 +345,9 @@ def asthma(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Stroke register
-    dictUsers[user.id]["Stroke"] = boolean_answer[update.message.text]
-    logger.info(f"Ha tenido un infarto {user.first_name}: {update.message.text}")
+    if "Stroke" not in dictUsers[user.id]:
+        dictUsers[user.id]["Stroke"] = boolean_answer[update.message.text]
+        logger.info(f"Ha tenido un infarto {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de asma?",
@@ -352,8 +362,9 @@ def diabetis(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Asthma register
-    dictUsers[user.id]["Asthma"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene asma {user.first_name}: {update.message.text}")
+    if "Asthma" not in dictUsers[user.id]:
+        dictUsers[user.id]["Asthma"] = boolean_answer[update.message.text]
+        logger.info(f"Tiene asma {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces diabetis?",
@@ -368,8 +379,9 @@ def kidney_disease(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Diabetis register
-    dictUsers[user.id]["Diabetis"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene diabetis {user.first_name}: {update.message.text}")
+    if "Diabetis" not in dictUsers[user.id]:
+        dictUsers[user.id]["Diabetis"] = boolean_answer[update.message.text]
+        logger.info(f"Tiene diabetis {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de alguna enfermedad en los riñones?",
@@ -384,8 +396,9 @@ def skin_cancer(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Si', 'No']]
     # Kidney disease register
-    dictUsers[user.id]["Kidney_Disease"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene problemas con el riñon {user.first_name}: {update.message.text}")
+    if "Kidney_Disease" not in dictUsers[user.id]:
+        dictUsers[user.id]["Kidney_Disease"] = boolean_answer[update.message.text]
+        logger.info(f"Tiene problemas con el riñon {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes o has tenido cáncer de piel?",

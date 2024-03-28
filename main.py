@@ -79,7 +79,6 @@ def weight(update: Update, context: CallbackContext, ) -> int:
     if (update.message.text.isnumeric() == False):
         dictUsers[user.id] = msg["age"](dictUsers, update, logger)
         return WEIGHT
-    # Age register
     dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
     return HEIGHT
 
@@ -89,7 +88,6 @@ def height(update: Update, context: CallbackContext, ) -> int:
     if (update.message.text.replace(".","").isnumeric() == False):
         dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
         return HEIGHT
-    # Weight register
     dictUsers[user.id] = msg["height"](dictUsers, update, logger)
     return RACE
 
@@ -99,239 +97,132 @@ def race(update: Update, context: CallbackContext, ) -> int:
     if (update.message.text.replace(".","").isnumeric() == False):
         dictUsers[user.id] = msg["height"](dictUsers, update, logger)
         return RACE
-    # Height register
     dictUsers[user.id] = msg["race"](dictUsers, update, logger)
     return SMOKE
-
 
 # QUESTION 9
 def smoke(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Race register
-    dictUsers[user.id]["Race"] = update.message.text
-    logger.info(f"Etnía de {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Eres fumador?" + \
-        "\n\n*NOTA: Se considera fumador si has fumado mas de 100 cigarrillos en tu vida",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["caucasico","afroamericano","latino","asiatico","indio americano","otro"]:
+        dictUsers[user.id] = msg["race"](dictUsers, update, logger)
+        return SMOKE
+    dictUsers[user.id] = msg["smoke"](dictUsers, update, logger)
     return DRINK
-
 
 # QUESTION 10
 def drink(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Smoke register
-    dictUsers[user.id]["Smoke"] = boolean_answer[update.message.text]
-    logger.info(f"Es fumador {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Eres tomador habitual?" + \
-        "\n\n*NOTA: Se considera tomador habitual si tomas:" + \
-        "\n-Hombres: 14 bebidas o más a la semana." + \
-        "\n-Muheres: 7 bebidas o más a la semana",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["smoke"](dictUsers, update, logger)
+        return DRINK
+    dictUsers[user.id] = msg["drink"](dictUsers, update, logger)
     return EXERCISE
-
 
 # QUESTION 11
 def exercise(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Drink register
-    dictUsers[user.id]["Drink"] = boolean_answer[update.message.text]
-    logger.info(f"Es bebedor habitual {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Has ejercitado durante el último mes?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["drink"](dictUsers, update, logger)
+        return EXERCISE
+    dictUsers[user.id] = msg["exercise"](dictUsers, update, logger)
     return SLEEPTIME
-
 
 # QUESTION 12
 def sleep_time(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    # Exercise register
-    dictUsers[user.id]["Exercise"] = boolean_answer[update.message.text]
-    logger.info(f"Se ejercita {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas horas duermes en promedio?"
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["exercise"](dictUsers, update, logger)
+        return SLEEPTIME
+    dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
     return PHYSICALHEALTH
 
-
 # QUESTION 13
-def physical_healt(update: Update, context: CallbackContext, ) -> int:
+def physical_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    # Sleep time register
-    dictUsers[user.id]["Sleep_Time"] = float(update.message.text)
-    logger.info(f"Cuantas horas duerme {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has tenido alguna enfermedad o lesión. ¿Cuantos días duró?"
-    )
-
+    if (update.message.text.replace(".","").isnumeric() == False):
+        dictUsers[user.id] = msg["sleep_time"](dictUsers, update, logger)
+        return PHYSICALHEALTH
+    dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
     return MENTALHEALTH
 
-
 # QUESTION 14
-def mental_healt(update: Update, context: CallbackContext, ) -> int:
+def mental_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    # Physical health register
-    dictUsers[user.id]["Physical_Health"] = int(update.message.text)
-    logger.info(f"Cuantos días ha tenido problemas de salud física {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", durante el último mes, has sentido problemas con tu salud mental. ¿Cuantos días?"
-    )
-
+    if (update.message.text.replace(".","").isnumeric() == False):
+        dictUsers[user.id] = msg["physical_health"](dictUsers, update, logger)
+        return MENTALHEALTH
+    dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
     return DIFWALKING
-
 
 # QUESTION 15
 def difficult_to_walk(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Mental health register
-    dictUsers[user.id]["Mental_Health"] = int(update.message.text)
-    logger.info(f"Cuantos días ha tenido problemas de salud mental {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes problemas graves para caminar o subir escaleras?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if (update.message.text.replace(".","").isnumeric() == False):
+        dictUsers[user.id] = msg["mental_health"](dictUsers, update, logger)
+        return DIFWALKING
+    dictUsers[user.id] = msg["difficult_to_walk"](dictUsers, update, logger)
     return GENHEALTH
-
 
 # QUESTION 16
 def general_health(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Excelente', 'Muy buena', 'Buena', 'Regular', 'Mala']]
-    # Difficult walking register
-    dictUsers[user.id]["Difficult_Walking"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene problemas para caminar {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", En términos generales, ¿Cómo considerarías tu salud?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["difficult_to_walk"](dictUsers, update, logger)
+        return GENHEALTH
+    dictUsers[user.id] = msg["general_health"](dictUsers, update, logger)
     return STROKE
-
 
 # QUESTION 17
 def stroke(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # General health register
-    dictUsers[user.id]["General_Health"] = update.message.text
-    logger.info(f"Salud general de {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Alguna vez has tenido un infarto?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["excelente", "muy buena", "buena", "regular", "mala"]:
+        dictUsers[user.id] = msg["general_health"](dictUsers, update, logger)
+        return STROKE
+    dictUsers[user.id] = msg["stroke"](dictUsers, update, logger)
     return ASTHMA
-
 
 # QUESTION 18
 def asthma(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Stroke register
-    dictUsers[user.id]["Stroke"] = boolean_answer[update.message.text]
-    logger.info(f"Ha tenido un infarto {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de asma?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["stroke"](dictUsers, update, logger)
+        return ASTHMA
+    dictUsers[user.id] = msg["asthma"](dictUsers, update, logger)
     return DIABETIS
-
 
 # QUESTION 19
 def diabetis(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Asthma register
-    dictUsers[user.id]["Asthma"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene asma {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces diabetis?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["asthma"](dictUsers, update, logger)
+        return DIABETIS
+    dictUsers[user.id] = msg["diabetis"](dictUsers, update, logger)
     return KIDNEYDISEASE
-
 
 # QUESTION 20
 def kidney_disease(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Diabetis register
-    dictUsers[user.id]["Diabetis"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene diabetis {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Padeces de alguna enfermedad en los riñones?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["diabetis"](dictUsers, update, logger)
+        return KIDNEYDISEASE
+    dictUsers[user.id] = msg["kidney_disease"](dictUsers, update, logger)
     return SKINCANCER
-
 
 # QUESTION 21
 def skin_cancer(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
-    # Kidney disease register
-    dictUsers[user.id]["Kidney_Disease"] = boolean_answer[update.message.text]
-    logger.info(f"Tiene problemas con el riñon {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Tienes o has tenido cáncer de piel?",
-        reply_markup=ReplyKeyboardMarkup(
-                reply_keyboard, one_time_keyboard=True, input_field_placeholder='Si o No?'
-            ),
-    )
-
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["kidney_disease"](dictUsers, update, logger)
+        return SKINCANCER
+    dictUsers[user.id] = msg["skin_cancer"](dictUsers, update, logger)
     return PREDICTION
-
 
 def prediction(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    if update.message.text.lower() not in ["si","no"]:
+        dictUsers[user.id] = msg["skin_cancer"](dictUsers, update, logger)
+        return PREDICTION
+    
     # Skin cancer register
     dictUsers[user.id]["Skin_Cancer"] = boolean_answer[update.message.text]
     logger.info(f"Tiene cancer de piel {user.first_name}: {update.message.text}")
@@ -405,8 +296,8 @@ def main():
             DRINK :             [MessageHandler(Filters.text, drink, run_async=True)],
             EXERCISE :          [MessageHandler(Filters.text, exercise, run_async=True)],
             SLEEPTIME :         [MessageHandler(Filters.text, sleep_time, run_async=True)],
-            PHYSICALHEALTH :    [MessageHandler(Filters.text, physical_healt, run_async=True)],
-            MENTALHEALTH :      [MessageHandler(Filters.text, mental_healt, run_async=True)],
+            PHYSICALHEALTH :    [MessageHandler(Filters.text, physical_health, run_async=True)],
+            MENTALHEALTH :      [MessageHandler(Filters.text, mental_health, run_async=True)],
             DIFWALKING :        [MessageHandler(Filters.text, difficult_to_walk, run_async=True)],
             GENHEALTH :         [MessageHandler(Filters.text, general_health, run_async=True)],
             STROKE :            [MessageHandler(Filters.text, stroke, run_async=True)],
