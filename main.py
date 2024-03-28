@@ -58,113 +58,49 @@ def pregnant(update: Update, context: CallbackContext, ) -> int:
 # QUESTION 4
 def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    if update.message.text.lower() not in ["si","no"]:
+    if update.message.text.lower() not in ["si","no","/skip"]:
         dictUsers[user.id] = msg["pregnant"](dictUsers, update, logger)
         return PREGNANCYWEEKS
     dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
     return AGE
 
-
 # QUESTION 5
 def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    if dictUsers[user.id]["Pregnant"] == 1:
-        # Pregnancy weeks register
-        dictUsers[user.id]["Pregnancy_Weeks"] = int(update.message.text)
-        logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
-    else:
-        # Pregnancy weeks register
-        logger.info(f"Semanas de embarazo tiene {user.first_name}: 0")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ".¿Cuantos años tienes?"
-    )
-
+    if (update.message.text.isnumeric() == False) & (update.message.text != "/skip"):
+        dictUsers[user.id] = msg["pregnancy_weeks"](dictUsers, update, logger)
+        return AGE
+    dictUsers[user.id] = msg["age"](dictUsers, update, logger)
     return WEIGHT
-
 
 # QUESTION 6
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    if (update.message.text.isnumeric() == False):
+        dictUsers[user.id] = msg["age"](dictUsers, update, logger)
+        return WEIGHT
     # Age register
-    dictUsers[user.id]["Age"] = int(update.message.text)
-    # Se categoriza la edad para coincidir con el dataset de la red neuronal
-    if dictUsers[user.id]["Age"] >= 80:
-        dictUsers[user.id]["Age"] = "80+"
-    elif dictUsers[user.id]["Age"] >= 75:
-        dictUsers[user.id]["Age"] = "75-79"
-    elif dictUsers[user.id]["Age"] >= 70:
-        dictUsers[user.id]["Age"] = "70-74"
-    elif dictUsers[user.id]["Age"] >= 65:
-        dictUsers[user.id]["Age"] = "65-69"
-    elif dictUsers[user.id]["Age"] >= 60:
-        dictUsers[user.id]["Age"] = "60-64"
-    elif dictUsers[user.id]["Age"] >= 55:
-        dictUsers[user.id]["Age"] = "55-59"
-    elif dictUsers[user.id]["Age"] >= 50:
-        dictUsers[user.id]["Age"] = "50-54"
-    elif dictUsers[user.id]["Age"] >= 45:
-        dictUsers[user.id]["Age"] = "45-49"
-    elif dictUsers[user.id]["Age"] >= 40:
-        dictUsers[user.id]["Age"] = "40-44"
-    elif dictUsers[user.id]["Age"] >= 35:
-        dictUsers[user.id]["Age"] = "35-39"
-    elif dictUsers[user.id]["Age"] >= 30:
-        dictUsers[user.id]["Age"] = "30-34"
-    elif dictUsers[user.id]["Age"] >= 25:
-        dictUsers[user.id]["Age"] = "25-29"
-    else:
-        dictUsers[user.id]["Age"] = "18-24"
-    
-
-    logger.info(f"Edad de {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas (Kilogramos)?"
-    )
-
+    dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
     return HEIGHT
-
 
 # QUESTION 7
 def height(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
+    if (update.message.text.replace(".","").isnumeric() == False):
+        dictUsers[user.id] = msg["weight"](dictUsers, update, logger)
+        return HEIGHT
     # Weight register
-    dictUsers[user.id]["Weight"] = float(update.message.text)
-    logger.info(f"Peso de {user.first_name}: {update.message.text}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides (metros)?"
-    )
-
+    dictUsers[user.id] = msg["height"](dictUsers, update, logger)
     return RACE
-
-
-def bmi(weight,height):
-    return round(weight/(height**2),2)
-
 
 # QUESTION 8
 def race(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    reply_keyboard = [['Caucasico', 'Afroamericano', "Latino", "Asiatico", "Indio Americano", "Otro"]]
+    if (update.message.text.replace(".","").isnumeric() == False):
+        dictUsers[user.id] = msg["height"](dictUsers, update, logger)
+        return RACE
     # Height register
-    if float(update.message.text) > 100:
-        dictUsers[user.id]["Height"] = float(update.message.text)/100
-    else:
-        dictUsers[user.id]["Height"] = float(update.message.text)
-    logger.info(f"Estatura de {user.first_name}: {update.message.text}")
-    # BMI register
-    dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
-    logger.info(f"Indice de masa corporal de {user.first_name}: {dictUsers[user.id]['BMI']}")
-
-    update.message.reply_text(
-        str(user.first_name) + " " + str(user.last_name) + "¿A qué etnía perteneces?",
-        reply_markup=ReplyKeyboardMarkup(
-            reply_keyboard, one_time_keyboard=True, input_field_placeholder='Caucasico, Afroamericano, Latino, Asiatico, Indio Americano, Otro?'
-        ),
-    )
-
+    dictUsers[user.id] = msg["race"](dictUsers, update, logger)
     return SMOKE
 
 
@@ -460,7 +396,7 @@ def main():
         states = {
             GENDER :            [MessageHandler(Filters.text, gender, run_async=True)],
             PREGNANT :          [MessageHandler(Filters.text, pregnant, run_async=True)],
-            PREGNANCYWEEKS :    [MessageHandler(Filters.text, pregnancy_weeks, run_async=True),CommandHandler('skip',age)],
+            PREGNANCYWEEKS :    [MessageHandler(Filters.text & ~Filters.command, pregnancy_weeks, run_async=True),CommandHandler('skip',age)],
             AGE :               [MessageHandler(Filters.text & ~Filters.command, age, run_async=True),CommandHandler('skip',age)],
             WEIGHT :            [MessageHandler(Filters.text, weight, run_async=True)],
             HEIGHT :            [MessageHandler(Filters.text, height, run_async=True)],

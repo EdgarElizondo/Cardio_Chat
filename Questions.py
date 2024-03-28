@@ -79,18 +79,18 @@ def pregnant(dictUsers, update, logger):
 # QUESTION 4
 def pregnancy_weeks(dictUsers, update, logger):
     user = update.message.chat
-    reply_keyboard = [['Si', 'No']]
     if "Pregnant" not in dictUsers[user.id]:
-        dictUsers[user.id]["Pregnant"] = update.message.text
+        if update.message.text == 'Si':
+            dictUsers[user.id]["Pregnant"] = 1
+        else:
+            dictUsers[user.id]["Pregnant"] = 0
         logger.info(f"Esta embarazado {user.first_name}: {update.message.text}")
 
-    if dictUsers[user.id]["Pregnant"] == 'Si':
-        dictUsers[user.id]["Pregnant"] = 1
+    if dictUsers[user.id]["Pregnant"] == 1:
         update.message.reply_text(
             str(user.first_name) + " " + str(user.last_name) + ", ¿Cuantas semanas llevas de embarazo?",
         )
-    elif dictUsers[user.id]["Pregnant"] == 'No':
-        dictUsers[user.id]["Pregnant"] = 0
+    elif dictUsers[user.id]["Pregnant"] == 0:
         update.message.reply_text(
             " " + str(user.first_name) + " " + str(user.last_name) + \
             " toca aqui por favor para avanzar ==> /skip.",
@@ -102,11 +102,14 @@ def age(dictUsers, update, logger) -> int:
     user = update.message.chat
     if dictUsers[user.id]["Pregnant"] == 1:
         # Pregnancy weeks register
-        dictUsers[user.id]["Pregnancy_Weeks"] = int(update.message.text)
-        logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
+        if "Pregnancy_Weeks" not in dictUsers[user.id]:
+            dictUsers[user.id]["Pregnancy_Weeks"] = int(update.message.text)
+            logger.info(f"Semanas de embarazo tiene {user.first_name}: {update.message.text}")
     else:
         # Pregnancy weeks register
-        logger.info(f"Semanas de embarazo tiene {user.first_name}: 0")
+        if "Pregnancy_Weeks" not in dictUsers[user.id]:
+            dictUsers[user.id]["Pregnancy_Weeks"] = 0
+            logger.info(f"Semanas de embarazo tiene {user.first_name}: 0")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ".¿Cuantos años tienes?"
@@ -117,38 +120,37 @@ def age(dictUsers, update, logger) -> int:
 def weight(dictUsers, update, logger) -> int:
     user = update.message.chat
     # Age register
-    dictUsers[user.id]["Age"] = int(update.message.text)
-    # Se categoriza la edad para coincidir con el dataset de la red neuronal
-    if dictUsers[user.id]["Age"] >= 80:
-        dictUsers[user.id]["Age"] = "80+"
-    elif dictUsers[user.id]["Age"] >= 75:
-        dictUsers[user.id]["Age"] = "75-79"
-    elif dictUsers[user.id]["Age"] >= 70:
-        dictUsers[user.id]["Age"] = "70-74"
-    elif dictUsers[user.id]["Age"] >= 65:
-        dictUsers[user.id]["Age"] = "65-69"
-    elif dictUsers[user.id]["Age"] >= 60:
-        dictUsers[user.id]["Age"] = "60-64"
-    elif dictUsers[user.id]["Age"] >= 55:
-        dictUsers[user.id]["Age"] = "55-59"
-    elif dictUsers[user.id]["Age"] >= 50:
-        dictUsers[user.id]["Age"] = "50-54"
-    elif dictUsers[user.id]["Age"] >= 45:
-        dictUsers[user.id]["Age"] = "45-49"
-    elif dictUsers[user.id]["Age"] >= 40:
-        dictUsers[user.id]["Age"] = "40-44"
-    elif dictUsers[user.id]["Age"] >= 35:
-        dictUsers[user.id]["Age"] = "35-39"
-    elif dictUsers[user.id]["Age"] >= 30:
-        dictUsers[user.id]["Age"] = "30-34"
-    elif dictUsers[user.id]["Age"] >= 25:
-        dictUsers[user.id]["Age"] = "25-29"
-    else:
-        dictUsers[user.id]["Age"] = "18-24"
-    
-
-    logger.info(f"Edad de {user.first_name}: {update.message.text}")
-
+    if "Age" not in dictUsers[user.id]:
+        dictUsers[user.id]["Age"] = int(update.message.text)
+        logger.info(f"Edad de {user.first_name}: {update.message.text}")
+        # Se categoriza la edad para coincidir con el dataset de la red neuronal
+        if dictUsers[user.id]["Age"] >= 80:
+            dictUsers[user.id]["Age"] = "80+"
+        elif dictUsers[user.id]["Age"] >= 75:
+            dictUsers[user.id]["Age"] = "75-79"
+        elif dictUsers[user.id]["Age"] >= 70:
+            dictUsers[user.id]["Age"] = "70-74"
+        elif dictUsers[user.id]["Age"] >= 65:
+            dictUsers[user.id]["Age"] = "65-69"
+        elif dictUsers[user.id]["Age"] >= 60:
+            dictUsers[user.id]["Age"] = "60-64"
+        elif dictUsers[user.id]["Age"] >= 55:
+            dictUsers[user.id]["Age"] = "55-59"
+        elif dictUsers[user.id]["Age"] >= 50:
+            dictUsers[user.id]["Age"] = "50-54"
+        elif dictUsers[user.id]["Age"] >= 45:
+            dictUsers[user.id]["Age"] = "45-49"
+        elif dictUsers[user.id]["Age"] >= 40:
+            dictUsers[user.id]["Age"] = "40-44"
+        elif dictUsers[user.id]["Age"] >= 35:
+            dictUsers[user.id]["Age"] = "35-39"
+        elif dictUsers[user.id]["Age"] >= 30:
+            dictUsers[user.id]["Age"] = "30-34"
+        elif dictUsers[user.id]["Age"] >= 25:
+            dictUsers[user.id]["Age"] = "25-29"
+        else:
+            dictUsers[user.id]["Age"] = "18-24"
+        
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto pesas (Kilogramos)?"
     )
@@ -158,8 +160,9 @@ def weight(dictUsers, update, logger) -> int:
 def height(dictUsers, update, logger) -> int:
     user = update.message.chat
     # Weight register
-    dictUsers[user.id]["Weight"] = float(update.message.text)
-    logger.info(f"Peso de {user.first_name}: {update.message.text}")
+    if "Weight" not in dictUsers[user.id]:
+        dictUsers[user.id]["Weight"] = float(update.message.text)
+        logger.info(f"Peso de {user.first_name}: {update.message.text}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + ", ¿Cuanto mides (metros)?"
@@ -173,15 +176,16 @@ def bmi(weight,height):
 def race(dictUsers, update, logger) -> int:
     user = update.message.chat
     reply_keyboard = [['Caucasico', 'Afroamericano', "Latino", "Asiatico", "Indio Americano", "Otro"]]
-    # Height register
-    if float(update.message.text) > 100:
-        dictUsers[user.id]["Height"] = float(update.message.text)/100
-    else:
-        dictUsers[user.id]["Height"] = float(update.message.text)
-    logger.info(f"Estatura de {user.first_name}: {update.message.text}")
-    # BMI register
-    dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
-    logger.info(f"Indice de masa corporal de {user.first_name}: {dictUsers[user.id]['BMI']}")
+    if "Height" not in dictUsers[user.id]:
+        # Height register
+        logger.info(f"Estatura de {user.first_name}: {update.message.text}")
+        if float(update.message.text) > 100:
+            dictUsers[user.id]["Height"] = float(update.message.text)/100
+        else:
+            dictUsers[user.id]["Height"] = float(update.message.text)
+        # BMI register
+        dictUsers[user.id]["BMI"] = bmi(dictUsers[user.id]["Weight"],dictUsers[user.id]["Height"])
+        logger.info(f"Indice de masa corporal de {user.first_name}: {dictUsers[user.id]['BMI']}")
 
     update.message.reply_text(
         str(user.first_name) + " " + str(user.last_name) + "¿A qué etnía perteneces?",
