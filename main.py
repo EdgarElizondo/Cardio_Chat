@@ -35,12 +35,14 @@ ask_cancel_message = "\n\nSi deseas cancelar la encuesta solo escribe o pica aqu
 def start(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
     dictUsers[user.id] = msg["start"](dictUsers, update)
+    if dictUsers[user.id] == -1:
+        return ConversationHandler.END
     return GENDER
 
 # QUESTION 2
 def gender(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    if update.message.text.lower() not in ["si","no"]:
+    if update.message.text.lower() not in ["si","no","/cancel"]:
         update.message.reply_text("Respuesta no valida, favor de seleccionar alguna de las opciones disponibles que aparecen." \
                                   + " Opciones válidas: Si, No")
         dictUsers[user.id] = msg["start"](dictUsers, update)
@@ -74,7 +76,7 @@ def pregnancy_weeks(update: Update, context: CallbackContext, ) -> int:
 # QUESTION 5
 def age(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    if (update.message.text.isnumeric() == False) & (update.message.text != "/skip"):
+    if (update.message.text.isnumeric() == False) & (update.message.text != "/skip") & (update.message.text != "/cancel"):
         update.message.reply_text("Respuesta no valida." \
                                   + " Opciones válidas: unicamente valores númericos entre 0-36." \
                                   + " En caso de que aparezca la opcion skip, seleccionarla para continuar.")
@@ -93,7 +95,7 @@ def age(update: Update, context: CallbackContext, ) -> int:
 # QUESTION 6
 def weight(update: Update, context: CallbackContext, ) -> int:
     user = update.message.chat
-    if (update.message.text.isnumeric() == False):
+    if (update.message.text.isnumeric() == False) & (update.message.text != "/cancel"):
         update.message.reply_text("Respuesta no valida." \
                                   + " Opciones válidas: unicamente valores númericos entre 0-100")
         dictUsers[user.id] = msg["age"](dictUsers, update, logger)
@@ -311,7 +313,7 @@ def prediction(update: Update, context: CallbackContext, ) -> int:
     print(dictUsers[user.id])
 
     # Execute ANN Model
-    prediction = run_ann(dictUsers[user.id])
+    prediction = round(run_ann(dictUsers[user.id]),4)
     dictUsers[user.id]["Prediction"] = prediction
     text_response = ""
     # Response text based on prediction level
@@ -397,5 +399,5 @@ def main():
 
 if __name__ == "__main__":
     logger = log(__name__)
-    db = database(bot_name)
+    db = database(bot_name, cloud=False)
     main()

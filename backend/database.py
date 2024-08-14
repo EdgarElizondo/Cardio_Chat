@@ -1,13 +1,17 @@
+import os
 import pymongo
 
 class database:
+
+    MONGO_USER = os.getenv("MONGO_USER")
+    MONGO_PASSWORD = os.getenv("MONGO_PASSWORD")
+
     def __init__(self,name,cloud=True) -> None:
         self.name = name
         self.cloud = cloud
         if self.cloud:
-            self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:Er23El10@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
-            # self.URI_CONNECTION = "mongodb+srv://liamedina98:Lia2145.@corbot.j8mkkdi.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
-            # self.URI_CONNECTION = "mongodb+srv://EdgarElizondo:@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+            self.URI_CONNECTION = f"mongodb+srv://{self.MONGO_USER}:{self.MONGO_PASSWORD}@corbot.3jul9je.mongodb.net/?retryWrites=true&w=majority&appName=CorBot"
+
         else:
             self.MONGODB_HOST = '127.0.0.1'
             self.MONGODB_PORT = '27017'
@@ -52,5 +56,8 @@ class database:
                     "Skin_Cancer":user_data["Skin_Cancer"]}
 
         # Insert Data
-        collection = self._connect()['new_data']
-        collection.insert_one(user)
+        try:
+            collection = self._connect()['new_data']
+            collection.insert_one(user)
+        except:
+            print("Error to database connection")

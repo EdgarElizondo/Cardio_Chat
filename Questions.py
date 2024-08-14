@@ -42,7 +42,7 @@ def gender(dictUsers, update, logger, ConversationHandler):
             "Gracias " + str(user.first_name) + " " + str(user.last_name) + \
             " por tomarte tu tiempo, que tengas buen dia"
         )
-        return ConversationHandler.END
+        return -1
 
     return dictUsers[user.id]
 
